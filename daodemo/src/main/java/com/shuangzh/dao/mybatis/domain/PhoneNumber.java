@@ -1,0 +1,30 @@
+package com.shuangzh.dao.mybatis.domain;
+
+/**
+ * Created by admin on 2017/3/9.
+ */
+public class PhoneNumber {
+    private String countryConde;
+    private String stateCode;
+    private String number;
+
+    public PhoneNumber(String countryCode, String stateCode, String number) {
+        this.countryConde = countryCode;
+        this.stateCode = stateCode;
+        this.number = number;
+    }
+
+    public PhoneNumber(String string) {
+        if (string != null) {
+            String[] parts = string.split("-");
+            if (parts.length > 0) this.countryConde = parts[0];
+            if (parts.length > 1) this.stateCode = parts[1];
+            if (parts.length > 2) this.number = parts[2];
+        }
+    }
+
+    public  String getAsString() {
+        return countryConde +"-" + stateCode+"-"+number;
+    }
+
+}

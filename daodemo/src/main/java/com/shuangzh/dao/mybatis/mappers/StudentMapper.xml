@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuangzh.dao.mybatis.mappers.StudentMapper">
+    <resultMap type="Student" id="StudentResult">
+        <id property="stuId" column="stud_id"/>
+        <result property="name" column="name"/>
+        <result property="email" column="email"/>
+        <result property="dob" column="dob"/>
+        <result property="phone" column="phone"/>
+    </resultMap>
+    <select id="findAllStudents" resultMap="StudentResult">
+        SELECT * FROM STUDENTS
+    </select>
+    <select id="findStudentById" parameterType="int" resultType="Student">
+        SELECT STUD_ID AS STUID, NAME, EMAIL, DOB, PHONE
+        FROM STUDENTS WHERE STUD_ID=#{Id}
+    </select>
+    <insert id="insertStudent" parameterType="Student">
+        <selectKey keyProperty="stuId" resultType="int" order="BEFORE">
+            SELECT SEQ_STUID.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO STUDENTS(STUD_ID,NAME,EMAIL,DOB, PHONE)
+        VALUES(#{stuId },#{name},#{email},#{dob}, #{phone})
+    </insert>
+
+</mapper>
