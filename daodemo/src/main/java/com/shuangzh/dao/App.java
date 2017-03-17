@@ -2,6 +2,7 @@ package com.shuangzh.dao;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.context.ContextLoader;
 
 /**
  * Hello world!
@@ -16,5 +17,7 @@ public class App
     {
         System.out.println( "Hello World!" );
         SpringApplication.run(App.class, args);
+//        ContextLoader.getCurrentWebApplicationContext().getServletContext().setAttribute("project","my boot project");
+
     }
 }

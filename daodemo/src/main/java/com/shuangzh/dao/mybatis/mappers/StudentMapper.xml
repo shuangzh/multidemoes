@@ -3,12 +3,71 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.shuangzh.dao.mybatis.mappers.StudentMapper">
     <resultMap type="Student" id="StudentResult">
-        <id property="stuId" column="stud_id"/>
+        <id property="studId" column="stud_id"/>
         <result property="name" column="name"/>
         <result property="email" column="email"/>
         <result property="dob" column="dob"/>
         <result property="phone" column="phone"/>
     </resultMap>
+
+    <resultMap id="StudentWithAddressResult" type="Student" extends="StudentResult">
+        <result property="address.addrId" column="addr_id" />
+        <result property="address.street" column="street" />
+        <result property="address.city" column="city"/>
+        <result property="address.zip" column="zip"/>
+        <result property="address.country" column="country"/>
+        <result property="address.state" column="state"/>
+    </resultMap>
+    
+    <resultMap id="AddressResult" type="Address">
+        <id property="addrId" column="addr_id"/>
+        <result property="street" column="street"/>
+        <result property="city" column="city"/>
+        <result property="state" column="state"/>
+        <result property="zip" column="zip"/>
+        <result property="country" column="country"/>
+    </resultMap>
+    
+    <resultMap id="StudentWithAddressResult1" type="Student">
+        <id property="studId" column="stud_id"/>
+        <result property="name" column="name"/>
+        <result property="email" column="email"/>
+        <association property="address" resultMap="AddressResult"/>
+    </resultMap>
+
+
+    <resultMap id="StudentWithAddressResult2" type="Student">
+        <id property="studId" column="stud_id"/>
+        <result property="name" column="name"/>
+        <result property="email" column="email"/>
+        <association property="address" column="addr_id" select="findAddressById"/>
+    </resultMap>
+
+    <resultMap id="CourseResult" type="Course" >
+        <id property="courseId" column="course_id"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description" />
+        <result property="startDate" column="start_date"/>
+        <result property="endDate" column="end_date"/>
+    </resultMap>
+
+    <resultMap id="TutorResult" type="Tutor" >
+        <id property="tutorId" column="tutor_id"/>
+        <result property="name" column="tutor_name"/>
+        <result property="email" column="email"/>
+        <collection property="courses" resultMap="CourseResult"/>
+    </resultMap>
+
+
+    <resultMap id="TutorResult1" type="Tutor" >
+        <id property="tutorId" column="tutor_id"/>
+        <result property="name" column="tutor_name"/>
+        <result property="email" column="email"/>
+        <collection property="courses" column="tutor_id" select="findCoursesByTutor"/>
+    </resultMap>
+
+
+
     <select id="findAllStudents" resultMap="StudentResult">
         SELECT * FROM STUDENTS
     </select>
@@ -17,11 +76,105 @@
         FROM STUDENTS WHERE STUD_ID=#{Id}
     </select>
     <insert id="insertStudent" parameterType="Student">
-        <selectKey keyProperty="stuId" resultType="int" order="BEFORE">
+        <selectKey keyProperty="studId" resultType="int" order="BEFORE">
             SELECT SEQ_STUID.NEXTVAL FROM DUAL
         </selectKey>
         INSERT INTO STUDENTS(STUD_ID,NAME,EMAIL,DOB, PHONE)
-        VALUES(#{stuId },#{name},#{email},#{dob}, #{phone})
+        VALUES(#{studId },#{name},#{email},#{dob}, #{phone})
     </insert>
+    
+    <select id="selectStudentWithAddress" parameterType="int" resultMap="StudentWithAddressResult">
+        SELECT stud_id, name, email, phone, a.addr_id, street, city, state, zip, country
+         FROM students s LEFT OUTER  JOIN addresses a on s.addr_id = a.addr_id
+         WHERE  stud_id = #{studID}
+    </select>
+
+    <select id="selectStudentWithAddress1" parameterType="int" resultMap="StudentWithAddressResult1">
+        SELECT stud_id, name, email, phone, a.addr_id, street, city, state, zip, country
+        FROM students s LEFT OUTER  JOIN addresses a on s.addr_id = a.addr_id
+        WHERE  stud_id = #{studID}
+    </select>
+
+    <select id="findAddressById" parameterType="int"  resultMap="AddressResult">
+        SELECT addr_id, street, city, state, zip, country FROM Addresses
+        WHERE  addr_id = #{addr_id}
+    </select>
+
+    <select id="selectStudentWithAddress2" parameterType="int" resultMap="StudentWithAddressResult2">
+        SELECT * FROM students
+        WHERE  stud_id = #{studID}
+    </select>
+
+
+    <select id="findTutorById" parameterType="int" resultMap="TutorResult">
+        SELECT T.TUTOR_ID, T.NAME AS TUTOR_NAME, EMAIL, C.COURSE_ID,
+        C.NAME, DESCRIPTION, START_DATE, END_DATE
+        FROM TUTORS T LEFT OUTER JOIN ADDRESSES A ON T.ADDR_ID=A.ADDR_ID
+        LEFT OUTER JOIN COURSES C ON T.TUTOR_ID=C.TUTOR_ID
+        WHERE T.TUTOR_ID=#{tutorId}
+    </select>
+
+    <select id="findTutorById1" parameterType="int" resultMap="TutorResult1">
+        SELECT T.TUTOR_ID, T.NAME AS TUTOR_NAME, EMAIL
+        FROM TUTORS T
+        WHERE T.TUTOR_ID=#{tutorId}
+    </select>
+
+    <select id="findCoursesByTutor" parameterType="int" resultMap="CourseResult">
+        SELECT * FROM courses WHERE  tutor_id = #{tutorId}
+    </select>
+
+    <select id="searchCourses" parameterType="hashmap" resultMap="CourseResult">
+    SELECT * FROM COURSES
+    WHERE TUTOR_ID= #{tutorId}
+    <if test="courseName != null">
+        AND NAME LIKE #{courseName}
+    </if>
+    <if test="startDate != null">
+        AND START_DATE &gt;= #{startDate}
+    </if>
+    <if test="endDate != null">
+        AND END_DATE &lt;= #{endDate}
+    </if>
+    </select>
+
+    <select id="searchCourses1" parameterType="hashmap" resultMap="CourseResult">
+        SELECT * FROM COURSES
+        <choose>
+            <when test="searchBy == 'Tutor'">
+                WHERE TUTOR_ID= #{tutorId}
+            </when>
+            <when test="searchBy == 'CourseName'">
+                WHERE name like #{courseName}
+            </when>
+            <otherwise>
+                WHERE TUTOR start_date  &gt;= now()
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="selectStudentByName" parameterType="String" resultMap="StudentResult">
+        SELECT  * FROM students where name = #{name}
+    </select>
+
+
+    <select id="searchCourses2" parameterType="hashmap"
+            resultMap="CourseResult">
+        SELECT * FROM COURSES
+        <where>
+            <if test=" tutorId != null ">
+                TUTOR_ID= #{tutorId}
+            </if>
+            <if test="courseName != null">
+                AND name like #{courseName}
+            </if>
+            <if test="startDate != null">
+                AND start_date &gt;= #{startDate}
+            </if>
+            <if test="endDate != null">
+                AND end_date  &lt;= #{endDate}
+            </if>
+        </where>
+    </select>
 
 </mapper>

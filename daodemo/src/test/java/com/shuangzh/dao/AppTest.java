@@ -1,7 +1,9 @@
 package com.shuangzh.dao;
 
+import com.shuangzh.dao.mybatis.domain.Course;
 import com.shuangzh.dao.mybatis.domain.PhoneNumber;
 import com.shuangzh.dao.mybatis.domain.Student;
+import com.shuangzh.dao.mybatis.domain.Tutor;
 import com.shuangzh.dao.mybatis.mappers.StudentMapper;
 import com.shuangzh.dao.mybatis.services.StudentService;
 import org.apache.ibatis.session.SqlSession;
@@ -15,7 +17,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Unit test for simple App.
@@ -45,16 +50,32 @@ public class AppTest {
         student.setPhone(new PhoneNumber("11-02-1380988"));
 
         int i= studentMapper.insertStudent(student);
-        System.out.println("rentun i="+i +"  student id=" + student.getStuId());
+        System.out.println("rentun i="+i +"  student id=" + student.getStudId());
 
         sqlSession.commit();
+
+
+        Student st1 = sqlSession.selectOne("com.shuangzh.dao.mybatis.mappers.StudentMapper.selectStudentWithAddress", 13);
+        st1 = sqlSession.selectOne("com.shuangzh.dao.mybatis.mappers.StudentMapper.selectStudentWithAddress1", 11);
+
+        st1 = sqlSession.selectOne("com.shuangzh.dao.mybatis.mappers.StudentMapper.selectStudentWithAddress2", 25);
+
+        Tutor tutor1=sqlSession.selectOne("com.shuangzh.dao.mybatis.mappers.StudentMapper.findTutorById", 1);
+
+        tutor1=sqlSession.selectOne("com.shuangzh.dao.mybatis.mappers.StudentMapper.findTutorById1", 2);
+
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("tutorId", 1);
+        map.put("courseName", "%Java%");
+        List<Course> ls = sqlSession.selectList("com.shuangzh.dao.mybatis.mappers.StudentMapper.searchCourses",map);
+
         sqlSession.close();
 
 
         List<Student>  list = studentService.findAllStudents();
         for(Student st:list)
         {
-            logger.info("id : {} , name: {}, email: {}, phone:{}", st.getStuId(), st.getName(), st.getEmail(), st.getPhone()==null?"null":st.getPhone().getAsString());
+            logger.info("id : {} , name: {}, email: {}, phone:{}", st.getStudId(), st.getName(), st.getEmail(), st.getPhone()==null?"null":st.getPhone().getAsString());
         }
 
     }

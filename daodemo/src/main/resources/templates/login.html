@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <meta charset="UTF-8"/>
+    <title>DEMO - LOGIN PAGE</title>
+    <link rel="stylesheet" type="text/css" href="easyui/themes/default/easyui.css"/>
+    <link rel="stylesheet" type="text/css" href="easyui/themes/icon.css"/>
+    <link rel="stylesheet" type="text/css" href="easyui/demo/demo.css"/>
+    <script type="text/javascript" src="easyui/jquery.min.js"></script>
+    <script type="text/javascript" src="easyui/jquery.easyui.min.js"></script>
+</head>
+<body>
+
+<div class="easyui-layout" style="width:auto;height:600px;">
+    <div data-options="region:'north'" style="height:80px">
+        <h2>DEMON LOGIN</h2>
+        <p>LOGIN PAGE</p>
+    </div>
+    <div data-options="region:'center'">
+        <div id="plogin" class="easyui-panel" title="Login" data-options="style:{position:'absolute',left:400,top:10}"
+             style="max-width:400px;padding:30px 60px; margin: 0 auto;">
+            <form id="ff" method="post" action="login-do">
+                <div style="margin-bottom:20px">
+                    <input class="easyui-textbox" name="name" style="width:100%"
+                           data-options="label:'Name:',required:true"/>
+                </div>
+                <div style="margin-bottom:20px">
+                    <input class="easyui-textbox" name="email" style="width:100%"
+                           data-options="label:'Email:',required:true,validType:'email'"/>
+                </div>
+                <div style="margin-bottom:20px">
+                    <input class="easyui-textbox" name="password" style="width:100%"
+                           data-options="label:'Password:',required:true"/>
+                </div>
+                <div style="margin-bottom:20px">
+                    <select class="easyui-combobox" name="role" label="Role" style="width:100%">
+                        <option value="student">Student</option>
+                        <option value="tutor">Tutor</option>
+                        <option value="admin">Administrator</option>
+                    </select>
+                </div>
+                <div  style="margin-bottom:20px">
+                    <p th:text="${errmsg}">error message</p>
+                </div>
+            </form>
+
+            <div style="text-align:center;padding:5px 0">
+                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()"
+                   style="width:80px">Submit</a>
+                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()"
+                   style="width:80px">Clear</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script language="javascript">
+
+    function submitForm(){
+        console.info("login submitForm")
+        $('#ff').submit()
+        return false;
+    }
+    function clearForm(){
+        $('#ff').form('clear');
+    }
+
+    $(function () {
+        console.info("panel move");
+        // $('#plogin').panel('move',{left:200, top:100});
+        console.info("panel move over");
+    })
+
+
+
+</script>
+</html>

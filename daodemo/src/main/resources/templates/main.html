@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <meta charset="UTF-8"/>
+    <title>DEMO - MAIN PAGE</title>
+    <link rel="stylesheet" type="text/css" href="easyui/themes/default/easyui.css"/>
+    <link rel="stylesheet" type="text/css" href="easyui/themes/icon.css"/>
+    <link rel="stylesheet" type="text/css" href="easyui/demo/demo.css"/>
+    <script type="text/javascript" src="easyui/jquery.min.js"></script>
+    <script type="text/javascript" src="easyui/jquery.easyui.min.js"></script>
+</head>
+<body>
+<div class="easyui-layout" style="width:auto;height:700px;">
+    <div data-options="region:'north'" style="height:100px">
+        <h2>DEMON MAIN PAGE</h2>
+        <p>Name:<span th:text="${session.s_user.name}">user.name</span> Email:<span
+                th:text="${session.s_user.email}">shuangzh@qq.com</span> ROLE:<span th:text="${session.s_role}">Student</span></p>
+    </div>
+    <div data-options="region:'west',split:true,collapsible:false" title="控制面板" style="width:300px;">
+        <div class="easyui-accordion" data-options="fit:true,border:false">
+            <div title="学生界面" style="padding:10px;" data-options="selected:true">
+                <ul>
+                    <li>
+                        <a id="st-but1" href="#" class="easyui-linkbutton" data-options="plain:true">个人信息维护</a>
+                    </li>
+                    <li>
+                        <a href="#" class="easyui-linkbutton" data-options="plain:true">Text Button</a>
+                    </li>
+                    <li>
+                        <a href="#" class="easyui-linkbutton" data-options="plain:true">Text Button</a>
+                    </li>
+                </ul>
+            </div>
+            <div title="Title2"  style="padding:10px;">
+                content2
+            </div>
+            <div title="Title3" style="padding:10px">
+                content3
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center'">
+        <div id="tt" class="easyui-tabs" data-options="fit:true,border:false,plain:true">
+            <div title="About" data-options="href:'_content.html'" style="padding:10px"></div>
+            <div title="DataGrid" style="padding:5px">
+                <table class="easyui-datagrid"
+                       data-options="url:'datagrid_data1.json',method:'get',singleSelect:true,fit:true,fitColumns:true">
+                    <thead>
+                    <tr>
+                        <th data-options="field:'itemid'" width="80">Item ID</th>
+                        <th data-options="field:'productid'" width="100">Product ID</th>
+                        <th data-options="field:'listprice',align:'right'" width="80">List Price</th>
+                        <th data-options="field:'unitcost',align:'right'" width="80">Unit Cost</th>
+                        <th data-options="field:'attr1'" width="150">Attribute</th>
+                        <th data-options="field:'status',align:'center'" width="50">Status</th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<script language="javascript">
+    $(function () {
+        $("#st-but1").click(function () {
+            console.info("st-but1 has bean clicked")
+            var cont = '<iframe scrolling="auto" frameborder="0" style="width:100%;height: 90%;" src="/info" > </iframe>'
+            $("#tt").tabs('add', {
+                title: '个人信息维护',
+                closable: true,
+                content: cont
+            })
+        })
+
+    })
+</script>
+</html>

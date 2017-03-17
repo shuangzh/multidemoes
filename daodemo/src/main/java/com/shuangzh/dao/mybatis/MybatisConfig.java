@@ -1,7 +1,6 @@
 package com.shuangzh.dao.mybatis;
 
-import com.shuangzh.dao.mybatis.domain.PhoneNumber;
-import com.shuangzh.dao.mybatis.domain.Student;
+import com.shuangzh.dao.mybatis.domain.*;
 import com.shuangzh.dao.mybatis.mappers.StudentMapper;
 import com.shuangzh.dao.mybatis.typehandlers.PhoneTypeHandler;
 import org.apache.ibatis.datasource.pooled.PooledDataSource;
@@ -27,7 +26,7 @@ import java.io.InputStream;
 @Configuration
 public class MybatisConfig {
     Logger logger = LoggerFactory.getLogger(MybatisConfig.class);
-    @Bean
+//    @Bean
     public SqlSessionFactory sqlSessionFactory() {
         logger.info("going to build sqlSessionFacotory");
         InputStream inputstream;
@@ -56,6 +55,9 @@ public class MybatisConfig {
 
         org.apache.ibatis.session.Configuration configuration=new org.apache.ibatis.session.Configuration(environment);
         configuration.getTypeAliasRegistry().registerAlias("Student", Student.class);
+        configuration.getTypeAliasRegistry().registerAlias("Address", Address.class);
+        configuration.getTypeAliasRegistry().registerAlias("Tutor", Tutor.class);
+        configuration.getTypeAliasRegistry().registerAlias("Course",Course.class);
         configuration.getTypeHandlerRegistry().register(PhoneNumber.class, PhoneTypeHandler.class);
         configuration.addMapper(StudentMapper.class);
         SqlSessionFactory sqlSessionFactory=new SqlSessionFactoryBuilder().build(configuration);

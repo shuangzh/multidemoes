@@ -4,6 +4,7 @@
 <configuration>
     <typeAliases>
         <typeAlias alias="Student" type="com.shuangzh.dao.mybatis.domain.Student" />
+        <typeAlias type="com.shuangzh.dao.mybatis.domain.Address" alias="Address" />
     </typeAliases>
     <typeHandlers>
         <typeHandler handler="com.shuangzh.dao.mybatis.typehandlers.PhoneTypeHandler" />

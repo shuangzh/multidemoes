@@ -8,12 +8,22 @@ import java.util.Date;
 
 public class Student {
 
-    private Integer stuId;
+    private Integer studId;
     private String name;
     private String email;
     private Date dob;
 
     private PhoneNumber phone;
+
+    private Address address;
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
 
     public PhoneNumber getPhone() {
         return phone;
@@ -23,12 +33,12 @@ public class Student {
         this.phone = phone;
     }
 
-    public Integer getStuId() {
-        return stuId;
+    public Integer getStudId() {
+        return studId;
     }
 
-    public void setStuId(Integer stuId) {
-        this.stuId = stuId;
+    public void setStudId(Integer studId) {
+        this.studId = studId;
     }
 
     public String getName() {
