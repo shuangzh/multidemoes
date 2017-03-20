@@ -13,31 +13,71 @@ import java.util.Map;
  */
 public class JsonUtil {
 
+    /**
+     * 对象转化为Json字符串
+     * @param obj
+     * @return
+     * @throws JsonProcessingException
+     */
     public static String toJsonString(Object obj) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.writeValueAsString(obj);
     }
 
+    /**
+     * 对象转化为 Map<K,V>
+     * @param obj
+     * @return
+     * @throws IOException
+     */
     public static Map<String, Object> toJsonMap(Object obj) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.readValue(toJsonString(obj), Map.class);
     }
 
+    /**
+     * Json字符串转化为对象
+     * @param json
+     * @param clazz
+     * @return
+     * @throws IOException
+     */
     public static Object toObject(String json, Class clazz) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.readValue(json, clazz);
     }
 
+    /**
+     * 对象中添加 K-V对， 并转化为Map
+     * @param target
+     * @param plusmap
+     * @return
+     * @throws IOException
+     */
     public static Map<String, Object> plusElements(Object target, Map<String, Object> plusmap) throws IOException {
         Map targmap = toJsonMap(toJsonMap(target));
         targmap.putAll(plusmap);
         return targmap;
     }
 
+    /**
+     * 对象添加K-V对， 并转化为Json传
+     * @param target
+     * @param plusmap
+     * @return
+     * @throws IOException
+     */
     public static String plusElementsAsString(Object target, Map<String, Object> plusmap) throws IOException {
         return toJsonString(plusElements(target, plusmap));
     }
 
+    /**
+     * 移除Object中的元素，并转化为Map
+     * @param target
+     * @param elemnames
+     * @return
+     * @throws IOException
+     */
     public Map<String, Object> removeElements(Object target, String[] elemnames) throws IOException {
         Map<String, Object> tarmap = toJsonMap(target);
         for (String name : elemnames) {
@@ -69,10 +109,23 @@ public class JsonUtil {
         return tarmap;
     }
 
+    /**
+     * 移除Object中的元素，并转化为Json字符串
+     * @param target
+     * @param elemnames
+     * @return
+     * @throws IOException
+     */
     public String removeElementsAsString(Object target, String[] elemnames) throws IOException {
         return toJsonString(removeElements(target, elemnames));
     }
 
+    /**
+     * 从Map中选出对象
+     * @param jsonmap
+     * @param elemname
+     * @return
+     */
     public Object pickElement(Map<String, Object> jsonmap, String elemname) {
         String[] strs = elemname.split("\\.");
         Map<String, Object> tmpmap = jsonmap;
@@ -93,6 +146,9 @@ public class JsonUtil {
         }
         return val;
     }
+
+
+
 
 
     public static String addElement(String json, String elemName, Object element, boolean force) throws IOException {
