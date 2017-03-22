@@ -14,23 +14,23 @@
 
 <form id="ff" method="post" action="info-do">
     <div style="margin-bottom:10px">
-        <input class="easyui-textbox" label="ID:" labelPosition="top" style="width:100%;height:52px"
+        <input class="easyui-textbox" label="ID:" labelPosition="top" name="ID" style="width:100%;height:52px"
                th:value="${session.s_user.studId}"/>
     </div>
     <div style="margin-bottom:10px">
-        <input class="easyui-textbox" label="Name:" labelPosition="top" style="width:100%;height:52px"
+        <input class="easyui-textbox" label="Name:" labelPosition="top" name="Name" style="width:100%;height:52px"
                th:value='${session.s_user.name}'/>
     </div>
     <div style="margin-bottom:10px">
-        <input class="easyui-textbox" label="Email:" labelPosition="top" style="width:100%;height:52px"
+        <input class="easyui-textbox" label="Email:" labelPosition="top" name="Email" style="width:100%;height:52px"
                th:value="${session.s_user.email}"/>
     </div>
     <div style="margin-bottom:10px">
-        <input class="easyui-textbox" label="Phone:" labelPosition="top" style="width:100%;height:52px"
+        <input class="easyui-textbox" label="Phone:" labelPosition="top" name="Phone"  style="width:100%;height:52px"
                th:value="${session.s_user.phone}"/>
     </div>
     <div style="margin-bottom:10px">
-        <input class="easyui-textbox" label="DOB:" labelPosition="top" style="width:100%;height:52px"
+        <input class="easyui-textbox" label="DOB:" labelPosition="top" name="DOB" style="width:100%;height:52px"
                 th:value="${session.s_user.dob}"/>
     </div>
 </form>
@@ -72,14 +72,21 @@
                 console.info("you click  Cancle")
             }
         })
-
     }
-
 
     $(function(){
         $("#ff input").attr('readonly','true');
         $("#btn_submit").hide();
         $("#btn_cancel").hide();
+
+        $("#ff").form('load',{
+            ID:'jsonId',
+            Name:'jsonName',
+            Email:'jsonEmail@jsson.com',
+            Phone:'json178880000',
+            DOB:'2016-10-11'
+        });
+
     })
 
 

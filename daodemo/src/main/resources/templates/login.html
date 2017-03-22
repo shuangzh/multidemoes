@@ -20,7 +20,7 @@
     <div data-options="region:'center'">
         <div id="plogin" class="easyui-panel" title="Login" data-options="style:{position:'absolute',left:400,top:10}"
              style="max-width:400px;padding:30px 60px; margin: 0 auto;">
-            <form id="ff" method="post" action="login-do">
+            <form id="ff" method="post" action="rest/login">
                 <div style="margin-bottom:20px">
                     <input class="easyui-textbox" name="name" style="width:100%"
                            data-options="label:'Name:',required:true"/>
@@ -40,11 +40,10 @@
                         <option value="admin">Administrator</option>
                     </select>
                 </div>
-                <div  style="margin-bottom:20px">
-                    <p th:text="${errmsg}">error message</p>
+                <div style="margin-bottom:20px">
+                    <p id="message" th:text="${message}">error message</p>
                 </div>
             </form>
-
             <div style="text-align:center;padding:5px 0">
                 <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()"
                    style="width:80px">Submit</a>
@@ -56,23 +55,33 @@
 </div>
 </body>
 <script language="javascript">
-
-    function submitForm(){
+    function submitForm() {
         console.info("login submitForm")
-        $('#ff').submit()
-        return false;
+        $('#ff').form('submit', {
+            onSubmit: function (param) {
+                console.info(param);
+            },
+            success: function (data) {
+                var data = eval('(' + data + ')')
+                if (data.code == 0) {
+                    $("#message").text("Login Success")
+                    setTimeout(function () {
+                        window.location.href = "http://localhost:8080/student/main"
+                    }, 3000)
+                }
+            }
+        })
     }
-    function clearForm(){
+
+    function clearForm() {
         $('#ff').form('clear');
     }
 
     $(function () {
-        console.info("panel move");
+        // console.info("panel move");
         // $('#plogin').panel('move',{left:200, top:100});
-        console.info("panel move over");
+        // console.info("panel move over");
     })
-
-
 
 </script>
 </html>

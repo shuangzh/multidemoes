@@ -35,10 +35,7 @@ public class MainActions {
         return new ModelAndView("info").addObject("name", "zhoushuang");
     }
 
-    @RequestMapping("/login")
-    public ModelAndView toLogin() {
-        return new ModelAndView("login").addObject("errmsg", "");
-    }
+
 
     @RequestMapping("/login-do")
     public String loginAction(HttpServletRequest request, ModelMap modelMap) {
@@ -82,4 +79,23 @@ public class MainActions {
     {
         return null;
     }
+
+
+    /**
+     * 跳转到登录页面
+     * @param modelMap
+     * @return
+     */
+    @RequestMapping("/login")
+    public ModelAndView toLoginPage(ModelMap modelMap) {
+        return new ModelAndView("login").addAllObjects(modelMap);
+    }
+
+
+    @RequestMapping("/student/main")
+    public ModelAndView toStudentMainPage(ModelMap modelMap){
+        return new ModelAndView("stud_main").addAllObjects(modelMap);
+    }
+
+
 }
