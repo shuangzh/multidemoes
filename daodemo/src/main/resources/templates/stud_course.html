@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <meta charset="UTF-8"/>
+    <title>DEMON - STUDENT COURSE PAGE</title>
+    <link rel="stylesheet" type="text/css" href="../static/easyui/themes/default/easyui.css"
+          th:href="@{/easyui/themes/default/easyui.css}"/>
+    <link rel="stylesheet" type="text/css" href="../static/easyui/themes/icon.css"
+          th:href="@{/easyui/themes/icon.css}"/>
+    <link rel="stylesheet" type="text/css" href="../static/easyui/demo/demo.css" th:href="@{/easyui/demo/demo.css}"/>
+    <script type="text/javascript" src="../static/easyui/jquery.min.js" th:src="@{/easyui/jquery.min.js}"></script>
+    <script type="text/javascript" src="../static/easyui/jquery.easyui.min.js"
+            th:src="@{/easyui/jquery.easyui.min.js}"></script>
+</head>
+<body>
+<div>
+    <table id="allcourse" class="easyui-datagrid" title="All Courses" style="width:90%;height:200px"
+           data-options="singleSelect:true,collapsible:true">
+        <thead>
+        <tr>
+            <th data-options="field:'courseId',width:40,align:'right'">CourseId</th>
+            <th data-options="field:'name',width:200,align:'center'">Name</th>
+            <th data-options="field:'description',width:200,align:'right'">Description</th>
+            <th data-options="field:'startDate',width:160">StartDate</th>
+            <th data-options="field:'endDate',width:160">EndDate</th>
+            <th data-options="field:'tutor_name',width:80,align:'center'">TutorName</th>
+        </tr>
+        </thead>
+    </table>
+    <div style="padding:5px 0;">
+        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="">Add</a>
+    </div>
+
+
+    <table id="chosens" class="easyui-datagrid" title="chosen courses" style="width:90%;height:200px"
+           data-options="singleSelect:true,collapsible:true">
+        <thead>
+        <tr>
+            <th data-options="field:'courseId',width:40,align:'right'">CourseId</th>
+            <th data-options="field:'name',width:200,align:'center'">Name</th>
+            <th data-options="field:'description',width:200,align:'right'">Description</th>
+            <th data-options="field:'startDate',width:160">StartDate</th>
+            <th data-options="field:'endDate',width:160">EndDate</th>
+            <th data-options="field:'tutor_name',width:80,align:'center'">TutorName</th>
+        </tr>
+        </thead>
+    </table>
+
+
+
+</div>
+</body>
+
+<script language="javascript">
+
+    /*<![CDATA[*/
+    $(function () {
+        $.get("/rest/student/getAllCourses", function (data, status) {
+            console.info("status:" + status)
+            console.info(JSON.stringify(data))
+            for (var i = 0; i < data.length; i++) {
+                data[i].tutor_name = data[i].tutor.name
+            }
+            console.info(JSON.stringify(data))
+            $("#allcourse").datagrid({data:data})
+        })
+    })
+
+
+    /*]]>*/
+
+</script>
+
+</html>

@@ -25,6 +25,7 @@
                     <input class="easyui-textbox" name="name" style="width:100%"
                            data-options="label:'Name:',required:true"/>
                 </div>
+                <!--
                 <div style="margin-bottom:20px">
                     <input class="easyui-textbox" name="email" style="width:100%"
                            data-options="label:'Email:',required:true,validType:'email'"/>
@@ -33,6 +34,7 @@
                     <input class="easyui-textbox" name="password" style="width:100%"
                            data-options="label:'Password:',required:true"/>
                 </div>
+                -->
                 <div style="margin-bottom:20px">
                     <select class="easyui-combobox" name="role" label="Role" style="width:100%">
                         <option value="student">Student</option>
@@ -67,7 +69,7 @@
                     $("#message").text("Login Success")
                     setTimeout(function () {
                         window.location.href = "http://localhost:8080/student/main"
-                    }, 3000)
+                    }, 1000)
                 }
             }
         })

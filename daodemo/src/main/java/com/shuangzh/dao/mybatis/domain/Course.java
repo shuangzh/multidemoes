@@ -12,7 +12,7 @@ public class Course {
     private Date startDate;
     private Date endDate;
     private Integer tutorId;
-
+    private Tutor tutor;
     public Integer getCourseId() {
         return courseId;
     }
@@ -59,5 +59,13 @@ public class Course {
 
     public void setTutorId(Integer tutorId) {
         this.tutorId = tutorId;
+    }
+
+    public Tutor getTutor() {
+        return tutor;
+    }
+
+    public void setTutor(Tutor tutor) {
+        this.tutor = tutor;
     }
 }

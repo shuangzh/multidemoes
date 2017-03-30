@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.shuangzh.dao.mybatis.mappers.StudentMapper">
+<mapper namespace="sql.StudentMapper">
     <resultMap type="Student" id="StudentResult">
         <id property="studId" column="stud_id"/>
         <result property="name" column="name"/>
@@ -9,6 +9,132 @@
         <result property="dob" column="dob"/>
         <result property="phone" column="phone"/>
     </resultMap>
+
+    <select id="selectStudentById" parameterType="int" resultMap="StudentResult">
+        SELECT STUD_ID, NAME, EMAIL, DOB, PHONE
+        FROM STUDENTS WHERE STUD_ID=#{Id}
+    </select>
+
+    <select id="selectStudentByName" parameterType="String" resultMap="StudentResult">
+        SELECT STUD_ID, NAME, EMAIL, DOB, PHONE
+        FROM STUDENTS WHERE NAME=#{name}
+    </select>
+
+    <select id="getAllStudents" resultMap="StudentResult">
+        SELECT STUD_ID, NAME, EMAIL, DOB, PHONE
+        FROM STUDENTS ORDER BY STUD_ID
+    </select>
+
+    <update id="updateStudent" parameterType="Map">
+        UPDATE STUDENTS
+        <set>
+            <if test="name !=null">name=#{name},</if>
+            <if test="email !=null">email=#{email},</if>
+            <if test="phone !=null">phone=#{phone},</if>
+            <if test="dob !=null">dob = #{dob},</if>
+        </set>
+        <choose>
+            <when test="studId !=null">
+                WHERE stud_id = #{studId}
+            </when>
+            <when test="studIds !=null">
+                WHERE stud_id IN
+                <foreach collection="studIds" item="studId" open="(" separator="," close=")">
+                    #{studId}
+                </foreach>
+            </when>
+            <when test="name !=null">
+                WHERE name = #{name}
+            </when>
+            <when test="names !=null">
+                WHERE name IN
+                <foreach collection="names" item="name" open="(" separator="," close=")">
+                    #{name}
+                </foreach>
+            </when>
+        </choose>
+    </update>
+
+    <delete id="deleteStudent" parameterType="Map">
+        DELETE FROM students
+        <choose>
+            <when test="studId !=null">
+                WHERE stud_id = #{studId}
+            </when>
+            <when test="name !=null">
+                WHERE name = #{name}
+            </when>
+            <when test="studIds !=null">
+                WHERE stud_id IN
+                <foreach collection="studIds" item="studId" open="(" separator="," close=")">
+                    #{studId}
+                </foreach>
+            </when>
+            <when test="names !=null">
+                WHERE stud_id IN
+                <foreach collection="names" item="name" open="(" separator="," close=")">
+                    #{name}
+                </foreach>
+            </when>
+        </choose>
+    </delete>
+
+    <resultMap id="StudentWithAddressResult" type="Student" extends="StudentResult">
+        <result property="address.addrId" column="addr_id"/>
+        <result property="address.street" column="street"/>
+        <result property="address.city" column="city"/>
+        <result property="address.state" column="state"/>
+        <result property="address.zip" column="zip"/>
+        <result property="address.country" column="country"/>
+    </resultMap>
+
+    <select id="selectStudentWithAddress" parameterType="Map" resultMap="StudentWithAddressResult">
+        select s.stud_id,
+        s.name,
+        s.email,
+        s.dob,
+        s.phone,
+        a.addr_id,
+        a.city,
+        a.country,
+        a.state,
+        a.street,
+        a.zip
+        from students s
+        left join addresses a
+        on s.addr_id = a.addr_id
+        <choose>
+            <when test="studId !=null">
+                where s.stud_id = #{studId}
+            </when>
+            <when test="studIds !=null">
+                WHERE s.stud_id IN
+                <foreach collection="studIds" item="studId" open="(" separator="," close=")">
+                    #{studId}
+                </foreach>
+            </when>
+            <when test="name !=null">
+                WHERE s.name = #{name}
+            </when>
+            <when test="names !=null">
+                WHERE s.name IN
+                <foreach collection="names" item="name" open="(" separator="," close=")">
+                    #{name}
+                </foreach>
+            </when>
+        </choose>
+    </select>
+
+    <insert id="insertStudent" parameterType="Student">
+        <selectKey keyProperty="studId" resultType="int" order="BEFORE">
+            SELECT SEQ_STUID.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO STUDENTS(STUD_ID,NAME,EMAIL,DOB, PHONE, ADDR_ID)
+        VALUES(#{studId },#{name,jdbcType=VARCHAR},#{email,jdbcType=VARCHAR},#{dob,jdbcType=DATE}, #{phone,jdbcType=VARCHAR}, #{address.addrId,jdbcType=INTEGER})
+    </insert>
+
+
+    <!--
 
     <resultMap id="StudentWithAddressResult" type="Student" extends="StudentResult">
         <result property="address.addrId" column="addr_id" />
@@ -18,7 +144,7 @@
         <result property="address.country" column="country"/>
         <result property="address.state" column="state"/>
     </resultMap>
-    
+
     <resultMap id="AddressResult" type="Address">
         <id property="addrId" column="addr_id"/>
         <result property="street" column="street"/>
@@ -27,7 +153,7 @@
         <result property="zip" column="zip"/>
         <result property="country" column="country"/>
     </resultMap>
-    
+
     <resultMap id="StudentWithAddressResult1" type="Student">
         <id property="studId" column="stud_id"/>
         <result property="name" column="name"/>
@@ -95,11 +221,11 @@
         INSERT INTO STUDENTS(STUD_ID,NAME,EMAIL,DOB, PHONE)
         VALUES(#{studId },#{name},#{email},#{dob}, #{phone})
     </insert>
-    
+
     <select id="selectStudentWithAddress" parameterType="int" resultMap="StudentWithAddressResult">
         SELECT stud_id, name, email, phone, a.addr_id, street, city, state, zip, country
-         FROM students s LEFT OUTER  JOIN addresses a on s.addr_id = a.addr_id
-         WHERE  stud_id = #{studID}
+        FROM students s LEFT OUTER  JOIN addresses a on s.addr_id = a.addr_id
+        WHERE  stud_id = #{studID}
     </select>
 
     <select id="selectStudentWithAddress1" parameterType="int" resultMap="StudentWithAddressResult1">
@@ -138,17 +264,17 @@
     </select>
 
     <select id="searchCourses" parameterType="hashmap" resultMap="CourseResult">
-    SELECT * FROM COURSES
-    WHERE TUTOR_ID= #{tutorId}
-    <if test="courseName != null">
-        AND NAME LIKE #{courseName}
-    </if>
-    <if test="startDate != null">
-        AND START_DATE &gt;= #{startDate}
-    </if>
-    <if test="endDate != null">
-        AND END_DATE &lt;= #{endDate}
-    </if>
+        SELECT * FROM COURSES
+        WHERE TUTOR_ID= #{tutorId}
+        <if test="courseName != null">
+            AND NAME LIKE #{courseName}
+        </if>
+        <if test="startDate != null">
+            AND START_DATE &gt;= #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND END_DATE &lt;= #{endDate}
+        </if>
     </select>
 
     <select id="searchCourses1" parameterType="hashmap" resultMap="CourseResult">
@@ -198,7 +324,9 @@
             <if test="phone !=null">phone=#{phone},</if>
             <if test="dob !=null">dob = #{dob},</if>
         </set>
-          WHERE  stud_id = #{studId}
+        WHERE  stud_id = #{studId}
     </update>
+
+    -->
 
 </mapper>

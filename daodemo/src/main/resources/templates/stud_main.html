@@ -3,12 +3,12 @@
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
     <meta charset="UTF-8"/>
-    <title>DEMO - MAIN PAGE</title>
-    <link rel="stylesheet" type="text/css" href="/easyui/themes/default/easyui.css"/>
-    <link rel="stylesheet" type="text/css" href="/easyui/themes/icon.css"/>
-    <link rel="stylesheet" type="text/css" href="/easyui/demo/demo.css"/>
-    <script type="text/javascript" src="/easyui/jquery.min.js"></script>
-    <script type="text/javascript" src="/easyui/jquery.easyui.min.js"></script>
+    <title>DEMO - STUDENT MAIN PAGE</title>
+    <link rel="stylesheet" type="text/css" href="../static/easyui/themes/default/easyui.css" th:href="@{/easyui/themes/default/easyui.css}"/>
+    <link rel="stylesheet" type="text/css" href="../static/easyui/themes/icon.css" th:href="@{/easyui/themes/icon.css}"/>
+    <link rel="stylesheet" type="text/css" href="../static/easyui/demo/demo.css" th:href="@{/easyui/demo/demo.css}"/>
+    <script type="text/javascript" src="../static/easyui/jquery.min.js" th:src="@{/easyui/jquery.min.js}"></script>
+    <script type="text/javascript" src="../static/easyui/jquery.easyui.min.js" th:src="@{/easyui/jquery.easyui.min.js}"></script>
 </head>
 <body>
 <div class="easyui-layout" style="width:auto;height:700px;">
@@ -25,7 +25,7 @@
                         <a id="st_but1" href="#" class="easyui-linkbutton" data-options="plain:true">个人信息维护</a>
                     </li>
                     <li>
-                        <a href="#" class="easyui-linkbutton" data-options="plain:true">Text Button</a>
+                        <a id="st_but2" href="#" class="easyui-linkbutton" data-options="plain:true">选课信息维护</a>
                     </li>
                     <li>
                         <a href="#" class="easyui-linkbutton" data-options="plain:true">Text Button</a>
@@ -67,13 +67,24 @@
     $(function () {
         $("#st_but1").click(function () {
             console.info("st-but1 has bean clicked")
-            var cont = '<iframe scrolling="auto" frameborder="0" style="width:100%;height: 90%;" src="/info" > </iframe>'
+            var cont = '<iframe scrolling="auto" frameborder="0" style="width:100%;height: 90%;" src="/student/info" > </iframe>'
             $("#tt").tabs('add', {
                 title: '个人信息维护',
                 closable: true,
                 content: cont
             })
         })
+
+        $("#st_but2").click(function () {
+            console.info("st-but1 has bean clicked")
+            var cont = '<iframe scrolling="auto" frameborder="0" style="width:100%;height: 90%;" src="/student/courses" > </iframe>'
+            $("#tt").tabs('add', {
+                title: '选课信息维护',
+                closable: true,
+                content: cont
+            })
+        })
+
 
     })
 </script>

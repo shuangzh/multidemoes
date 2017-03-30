@@ -8,6 +8,30 @@ public class PhoneNumber {
     private String stateCode;
     private String number;
 
+    public String getCountryConde() {
+        return countryConde;
+    }
+
+    public void setCountryConde(String countryConde) {
+        this.countryConde = countryConde;
+    }
+
+    public String getStateCode() {
+        return stateCode;
+    }
+
+    public void setStateCode(String stateCode) {
+        this.stateCode = stateCode;
+    }
+
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
+    }
+
     public PhoneNumber(String countryCode, String stateCode, String number) {
         this.countryConde = countryCode;
         this.stateCode = stateCode;

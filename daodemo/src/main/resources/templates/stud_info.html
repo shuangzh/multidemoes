@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <meta charset="UTF-8"/>
+    <title>DEMON - STUDENT INFO PAGE</title>
+    <link rel="stylesheet" type="text/css" href="../static/easyui/themes/default/easyui.css"
+          th:href="@{/easyui/themes/default/easyui.css}"/>
+    <link rel="stylesheet" type="text/css" href="../static/easyui/themes/icon.css"
+          th:href="@{/easyui/themes/icon.css}"/>
+    <link rel="stylesheet" type="text/css" href="../static/easyui/demo/demo.css" th:href="@{/easyui/demo/demo.css}"/>
+    <script type="text/javascript" src="../static/easyui/jquery.min.js" th:src="@{/easyui/jquery.min.js}"></script>
+    <script type="text/javascript" src="../static/easyui/jquery.easyui.min.js"
+            th:src="@{/easyui/jquery.easyui.min.js}"></script>
+</head>
+<body>
+
+<form id="ff" method="post" action="/rest/student/postInfo">
+    <div style="margin-bottom:10px">
+        <input class="easyui-textbox" label="ID:" labelPosition="top" name="studId" style="width:100%;height:52px"
+               th:value="${uuser['studId']}"/>
+    </div>
+    <div style="margin-bottom:10px">
+        <input class="easyui-textbox" label="Name:" labelPosition="top" name="name" style="width:100%;height:52px"
+               th:value='${session.s_user.name}'/>
+    </div>
+    <div style="margin-bottom:10px">
+        <input class="easyui-textbox" label="Email:" labelPosition="top" name="email" style="width:100%;height:52px"
+               th:value="${session.s_user.email}"/>
+    </div>
+    <div style="margin-bottom:10px">
+        <input class="easyui-textbox" label="Phone:" labelPosition="top" name="phone" style="width:100%;height:52px"
+               th:value="${uuser['phone']}"/>
+    </div>
+    <div style="margin-bottom:10px">
+        <input class="easyui-textbox" label="DOB:" labelPosition="top" name="dob" style="width:100%;height:52px"
+               th:value="${session.s_user.dob}"/>
+    </div>
+</form>
+
+<div>
+    <p id="msg"></p>
+</div>
+
+<div style="text-align:center;padding:5px 0">
+    <a id="btn_edit" href="javascript:void(0)" class="easyui-linkbutton" onclick="editForm()"
+       style="width:80px">编辑</a>
+    <a id="btn_submit" href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()"
+       style="width:80px">提交</a>
+    <a id="btn_cancel" href="javascript:void(0)" class="easyui-linkbutton" onclick="cancelForm()"
+       style="width:80px">取消</a>
+</div>
+
+</body>
+
+<script th:inline="javascript">
+
+    var user = [[${session.s_user}]]
+    var uuser = [[${uuser}]]
+
+    function editForm() {
+        // $("#ff input").removeAttribute('readonly')
+        $("#ff input").removeAttr('readonly')
+        $("#ff input").attr('disabled', false)
+        $("#btn_edit").hide();
+        $("#btn_submit").show();
+        $("#btn_cancel").show();
+    }
+
+    function cancelForm() {
+        location.reload();
+    }
+
+    function submitForm() {
+        $.messager.confirm('Confirm', 'Are you sure to submit', function (r) {
+            if (r) {
+                console.info("you click  OK")
+                $("#ff").form('submit',{
+                    onSubmit:function(param){
+                        console.info("submit post student info")
+                    },
+                    success:function(data){
+                        var data = eval('(' + data + ')')
+                        if(data.code==0) {
+                            $("#msg").text("Update Success !")
+                        }else {
+                            $("#msg").text(data.message)
+                        }
+                        $("#ff input").attr('readonly', 'true');
+                        $("#btn_edit").show();
+                        $("#btn_submit").hide();
+                        $("#btn_cancel").hide();
+                    }
+                })
+            } else {
+                console.info("you click  Cancle")
+            }
+        })
+    }
+
+    $(function () {
+        $("#ff input").attr('readonly', 'true');
+        $("#btn_submit").hide();
+        $("#btn_cancel").hide();
+
+//        $("#ff").form('load',{
+//            ID:'jsonId',
+//            Name:'jsonName',
+//            Email:'jsonEmail@jsson.com',
+//            Phone:'json178880000',
+//            DOB:'2016-10-11'
+//        });
+
+    })
+
+
+</script>
+</html>

@@ -10,6 +10,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mybatis.spring.SqlSessionTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +18,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Unit test for simple App.
@@ -39,46 +37,110 @@ public class AppTest {
     @Autowired
     StudentService studentService;
 
+    @Autowired
+    SqlSessionTemplate sqlSessionTemplate;
+//
+//    @Test
+//    public void SessionFactoryTest() {
+//        SqlSession sqlSession = sessionFactory.openSession();
+//        StudentMapper studentMapper = sqlSession.getMapper(StudentMapper.class);
+//        Student student = studentMapper.findStudentById(11);
+//
+//        student.setName("zhoushuang");
+//
+//        student.setPhone(new PhoneNumber("11-02-1380988"));
+//
+//        int i= studentMapper.insertStudent(student);
+//        System.out.println("rentun i="+i +"  student id=" + student.getStudId());
+//
+//        sqlSession.commit();
+//
+//
+//        Student st1 = sqlSession.selectOne("com.shuangzh.dao.mybatis.mappers.StudentMapper.selectStudentWithAddress", 13);
+//        st1 = sqlSession.selectOne("com.shuangzh.dao.mybatis.mappers.StudentMapper.selectStudentWithAddress1", 11);
+//
+//        st1 = sqlSession.selectOne("com.shuangzh.dao.mybatis.mappers.StudentMapper.selectStudentWithAddress2", 25);
+//
+//        Tutor tutor1=sqlSession.selectOne("com.shuangzh.dao.mybatis.mappers.StudentMapper.findTutorById", 1);
+//
+//        tutor1=sqlSession.selectOne("com.shuangzh.dao.mybatis.mappers.StudentMapper.findTutorById1", 2);
+//
+//        Map<String, Object> map = new HashMap<String, Object>();
+//        map.put("tutorId", 1);
+//        map.put("courseName", "%Java%");
+//        List<Course> ls = sqlSession.selectList("com.shuangzh.dao.mybatis.mappers.StudentMapper.searchCourses",map);
+//
+//
+//
+//        List<Course> cls=sqlSession.selectList("com.shuangzh.dao.mybatis.mappers.StudentMapper.findAllCourses");
+//
+//
+//        sqlSession.close();
+//
+//        List<Student>  list = studentService.findAllStudents();
+//        for(Student st:list)
+//        {
+//            logger.info("id : {} , name: {}, email: {}, phone:{}", st.getStudId(), st.getName(), st.getEmail(), st.getPhone()==null?"null":st.getPhone().getAsString());
+//        }
+//
+//    }
+
+
     @Test
-    public void SessionFactoryTest() {
-        SqlSession sqlSession = sessionFactory.openSession();
-        StudentMapper studentMapper = sqlSession.getMapper(StudentMapper.class);
-        Student student = studentMapper.findStudentById(11);
+    public void StudentMapperTest() {
 
-        student.setName("zhoushuang");
+        Student student1 = sqlSessionTemplate.selectOne("sql.StudentMapper.selectStudentById", 1);
 
-        student.setPhone(new PhoneNumber("11-02-1380988"));
+        Student student2 = sqlSessionTemplate.selectOne("sql.StudentMapper.selectStudentByName", "zhou01");
 
-        int i= studentMapper.insertStudent(student);
-        System.out.println("rentun i="+i +"  student id=" + student.getStudId());
-
-        sqlSession.commit();
+        List<Student> students=sqlSessionTemplate.selectList("sql.StudentMapper.getAllStudents");
 
 
-        Student st1 = sqlSession.selectOne("com.shuangzh.dao.mybatis.mappers.StudentMapper.selectStudentWithAddress", 13);
-        st1 = sqlSession.selectOne("com.shuangzh.dao.mybatis.mappers.StudentMapper.selectStudentWithAddress1", 11);
+        HashMap params=new HashMap();
+        params.put("studId",4);
+        params.put("name","zhou03");
+        params.put("email","Jon@com.cn");
+        int i=sqlSessionTemplate.update("sql.StudentMapper.updateStudent", params);
 
-        st1 = sqlSession.selectOne("com.shuangzh.dao.mybatis.mappers.StudentMapper.selectStudentWithAddress2", 25);
+        params.clear();
+        params.put("name","zhou03");
+        params.put("email","new@com.cn");
+        i=sqlSessionTemplate.update("sql.StudentMapper.updateStudent", params);
 
-        Tutor tutor1=sqlSession.selectOne("com.shuangzh.dao.mybatis.mappers.StudentMapper.findTutorById", 1);
+        params.clear();
+        HashSet<Integer> studIds=new HashSet<Integer>();
+        studIds.add(11);
+        studIds.add(12);
+        studIds.add(13);
+        params.put("studIds", studIds);
+        params.put("name", "newName");
+        i=sqlSessionTemplate.update("sql.StudentMapper.updateStudent", params);
 
-        tutor1=sqlSession.selectOne("com.shuangzh.dao.mybatis.mappers.StudentMapper.findTutorById1", 2);
+        params.clear();
+        HashSet<String> names = new HashSet<String>();
+        names.add("newName");
+        names.add("zhoushuang");
 
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("tutorId", 1);
-        map.put("courseName", "%Java%");
-        List<Course> ls = sqlSession.selectList("com.shuangzh.dao.mybatis.mappers.StudentMapper.searchCourses",map);
+        params.put("names", names);
+        params.put("phone","13809884175");
+        i=sqlSessionTemplate.update("sql.StudentMapper.updateStudent", params);
 
-        sqlSession.close();
+        params.clear();
+        params.put("studId",33);
+        Student s1 = sqlSessionTemplate.selectOne("sql.StudentMapper.selectStudentWithAddress", params);
 
+        params.clear();
+        params.put("name","zhoushuang");
+        List<Student> list1 = sqlSessionTemplate.selectList("sql.StudentMapper.selectStudentWithAddress", params);
 
-        List<Student>  list = studentService.findAllStudents();
-        for(Student st:list)
-        {
-            logger.info("id : {} , name: {}, email: {}, phone:{}", st.getStudId(), st.getName(), st.getEmail(), st.getPhone()==null?"null":st.getPhone().getAsString());
-        }
+        s1.setName("insert33");
+        PhoneNumber phoneNumber=s1.getPhone();
+        phoneNumber.setCountryConde("1");
+        phoneNumber.setNumber("123");
+        phoneNumber.setStateCode("2");
+
+        i=sqlSessionTemplate.insert("sql.StudentMapper.insertStudent", s1);
 
     }
-
 
 }
