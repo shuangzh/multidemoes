@@ -31,4 +31,16 @@ public class RestResponse {
     public void setData(Object data) {
         this.data = data;
     }
+
+
+    public RestResponse(int code, String message)
+    {
+        this.code = code;
+        this.message = message;
+    }
+
+    public RestResponse()
+    {
+
+    }
 }

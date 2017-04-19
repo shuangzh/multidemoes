@@ -50,7 +50,7 @@ public class MybatisConfig implements TransactionManagementConfigurer{
 //        }
 //    }
 
-    @Bean
+    @Bean(name = "mybatis_da")
     public DataSource dataSource() {
         String driver = "oracle.jdbc.driver.OracleDriver";
         String url = "jdbc:oracle:thin:@//localhost:1521/ORCL";
