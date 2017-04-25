@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+
+	<head>
+		<meta charset="UTF-8" />
+		<title>DEMO - Data Grid</title>
+		<link rel="stylesheet" type="text/css" href="../static/easyui/themes/default/easyui.css" th:href="@{/easyui/themes/default/easyui.css}" />
+		<link rel="stylesheet" type="text/css" href="../static/easyui/themes/icon.css" th:href="@{/easyui/themes/icon.css}" />
+		<link rel="stylesheet" type="text/css" href="../static/easyui/demo/demo.css" th:href="@{/easyui/demo/demo.css}" />
+		<script type="text/javascript" src="../static/easyui/jquery.min.js" th:src="@{/easyui/jquery.min.js}"></script>
+		<script type="text/javascript" src="../static/easyui/jquery.easyui.min.js" th:src="@{/easyui/jquery.easyui.min.js}"></script>
+		<script type="text/javascript" src="../static/js/myui.js"></script>
+	</head>
+
+	<body>
+		<table id="dg1" title="DataGrid">
+
+		</table>
+
+		<table id="dg2" title="DG2">
+
+		</table>
+
+		<table id="dg3" title="DG3">
+
+		</table>
+
+		<input id="tb" type="text" style="width:300px" />
+		<input id="tb1" type="text" style="width:300px" />
+		<form id="f1" method="get"> </form>
+	</body>
+
+	<script language="JavaScript">
+		$(function() {
+			
+			$("#f1").myform({
+			fields:[
+				{label:"名字", name:"name", ui:'datebox'},
+				{label:"密码", name:"password", ui:'textbox'}],
+			orientate:'horizontal',
+			url:'/multidemoes/daodemo/src/main/resources/templates/dat4.json',
+			updateTable:'dg2'
+			})
+			
+			$('#tb').textbox({
+				buttonText: 'Search',
+				iconCls: 'icon-man',
+				iconAlign: 'left'
+			})
+
+			$('#dg2').mydg({
+				columns: [
+					[{
+							field: 'id',
+							title: 'identity',
+							width: 100,
+							editor: 'numberbox'
+						},
+						{
+							field: 'name',
+							title: 'name',
+							width: 200,
+							editor: 'text'
+						}
+					]
+				],
+				url: '/multidemoes/daodemo/src/main/resources/templates/dat3.json',
+				method: 'get',
+				insertUrl: '/multidemoes/daodemo/src/main/resources/templates/dat1.json',
+				updateUrl: '/multidemoes/daodemo/src/main/resources/templates/dat2.json',
+				deleteUrl: '/multidemoes/daodemo/src/main/resources/templates/dat1.json'
+			})
+
+			//			$('#dg3').mydg({
+			//				columns: [
+			//					[{
+			//							field: 'id',
+			//							title: 'identity',
+			//							width: 100,
+			//							editor: 'numberbox'
+			//						},
+			//						{
+			//							field: 'name',
+			//							title: 'name',
+			//							width: 200,
+			//							editor: 'text'
+			//						}
+			//					]
+			//				],
+			//				url: '/multidemoes/daodemo/src/main/resources/templates/dat4.json',
+			//				method: 'get'
+			//			})
+
+		})
+	</script>
+
+</html>

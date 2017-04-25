@@ -27,7 +27,7 @@ import java.util.Map;
 public class Application {
 
 
-    public static String initCookie = "__guid=85OLHh58ca2e7d9ba8a5.33304212; LiveWSMBY90996241=1489645196571441042263; NMBY90996241fistvisitetime=1489645196579; vlstatId=vlstat-1489645196000-2613626222; __jsluid=85688deee6af1dce0181d49667e9dce5; NMBY90996241visitecounts=2; PHPSESSID=7v1sah5s377dok29evggsrbd66; FISKCDDCC=b949fd58a521f218ad5cf2e846763712; LiveWSMBY90996241sessionid=1492573301882517569999; DKLFFDKD=%7B%22key%22%3A%225b81d9d36db38ebd8be555c4dc5fa443%22%2C%22val%22%3A%221d684d5a657514cd06dd2bdcb28c5c56%22%2C%22tm%22%3A1492573321%7D; User_datas=%7B%22name%22%3A%22%5Cu5468%5Cu53cc%22%2C%22sex%22%3A0%2C%22avatar%22%3A%22%5C%2Fstatic%5C%2Fv4%5C%2Fstyle%5C%2Fglobal%5C%2Fu_0.jpg%22%2C%22phone%22%3A%2213809884175%22%2C%22fid%22%3A%223627257%22%7D; NMBY90996241lastvisitetime=1492573347469; NMBY90996241visitepages=NaN; _ga=GA1.2.745678522.1492571956; Hm_lvt_c4e8e5b919a5c12647962ea08462e63b=1492571956; Hm_lpvt_c4e8e5b919a5c12647962ea08462e63b=1492573348; __jsl_clearance=1492583407.948|0|3sJ1JQsJPF3BKRzA0nwOqRTTDkQ%3D";
+    public static String initCookie = "__guid=85OLHh58ca2e7d9ba8a5.33304212; LiveWSMBY90996241=1489645196571441042263; NMBY90996241fistvisitetime=1489645196579; vlstatId=vlstat-1489645196000-2613626222; __jsluid=85688deee6af1dce0181d49667e9dce5; NMBY90996241visitecounts=2; NMBY90996241lastinvite=1492586759168; _nyjy_newadv_=1; __jsl_clearance=1492617500.144|0|Zb%2FTDcjp8rA7cLHKQlxczElR310%3D; DKLFFDKD=%7B%22key%22%3A%22c41cfb2470b659006286d518dd7e9cef%22%2C%22val%22%3A%22e8dc72170f7444d2f0d260603b5fa2c3%22%2C%22tm%22%3A1492617501%7D; PHPSESSID=lp2c0ar7ci9q36c3f0spr4a0a6; Hm_lvt_c4e8e5b919a5c12647962ea08462e63b=1492617440; Hm_lpvt_c4e8e5b919a5c12647962ea08462e63b=1492617440; _ga=GA1.2.455600356.1492617440; _gat=1";
 
     public static String loginUrl = "https://user.91160.com/login.html";
 
@@ -36,6 +36,8 @@ public class Application {
     public static String tokens = null;
 
     public static Map<String, String> cookieMap = new HashMap<String, String>();
+
+    public static String relocation = null;
 
 //    public static DefaultHttpClient sslClient = new DefaultHttpClient();
 
@@ -102,8 +104,8 @@ public class Application {
     }
 
     public static void postform() {
+        // 登录
         HttpPost httpPost = new HttpPost(loginUrl);
-
         httpPost.setHeader("accept", "text/html,application/xhtml+xml,application/xml");
         httpPost.setHeader("accept-language", "zh-CN,zh;q=0.8");
         httpPost.setHeader("user-agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.110 Safari/537.36");
@@ -119,13 +121,10 @@ public class Application {
         params.add(new BasicNameValuePair("checkcode", ""));
         params.add(new BasicNameValuePair("tokens", tokens));
 
-
         httpPost.setHeader("cookie", getCookie());
-
 //        httpPost.setHeader("cookie", initCookie);
 //        RequestConfig requestConfig = RequestConfig.custom().setCookieSpec(CookieSpecs.BROWSER_COMPATIBILITY).build();
 //        httpPost.setConfig(requestConfig);
-
         try {
             httpPost.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
         } catch (UnsupportedEncodingException e) {
@@ -143,9 +142,69 @@ public class Application {
             Header[] heads = response.getAllHeaders();
             for (Header h : heads) {
                 System.out.println(h.getName() + ":" + h.getValue());
+                String name = h.getName();
+                if ("location".equalsIgnoreCase(h.getName())) {
+                    relocation = h.getValue();
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+
+
+        // 登录成功后，重定向
+        if (relocation != null) {
+            System.out.println("relocation ->"+ relocation);
+            HttpGet httpGet = new HttpGet(relocation);
+            httpGet.setHeader("accept", "text/html,application/xhtml+xml,application/xml");
+            httpGet.setHeader("accept-language", "zh-CN,zh;q=0.8");
+            httpGet.setHeader("user-agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.110 Safari/537.36");
+ //           httpGet.setHeader("cache-control", "max-age=0");
+            httpGet.setHeader("referer", relocation);
+            httpGet.setHeader("connection","keep-alive");
+            httpGet.setHeader("upgrade-insecure-requests","1");
+  //          cookieMap.clear();
+  //          httpGet.setHeader("cookie", getCookie());
+            try {
+                HttpResponse response1 = sslClient.execute(httpGet);
+                HttpEntity httpEntity = response1.getEntity();
+                System.out.println("###### 登录后页面 page ");
+                String content = EntityUtils.toString(httpEntity, "UTF-8");
+                System.out.println(content);
+                System.out.println("############### 登录后页面 page end");
+                System.out.println(response1.getStatusLine().getStatusCode());
+                Header[] heads = response1.getAllHeaders();
+                for (Header h : heads) {
+                    System.out.println(h.getName() + ":" + h.getValue());
+                }
+                System.out.println(getCookie());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            httpGet.setHeader("cookie", getCookie());
+            try {
+                HttpResponse response1 = sslClient.execute(httpGet);
+                HttpEntity httpEntity = response1.getEntity();
+                System.out.println("###### 登录后页面11 page ");
+                String content = EntityUtils.toString(httpEntity, "UTF-8");
+                System.out.println(content);
+                System.out.println("############### 登录后页面11 page end");
+                System.out.println(response1.getStatusLine().getStatusCode());
+                Header[] heads = response1.getAllHeaders();
+                for (Header h : heads) {
+                    System.out.println(h.getName() + ":" + h.getValue());
+                }
+                System.out.println(getCookie());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+
+
+
+
         }
     }
 

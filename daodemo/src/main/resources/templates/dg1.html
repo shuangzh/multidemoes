@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+
+	<head>
+		<meta charset="UTF-8" />
+		<title>DEMO - Data Grid</title>
+		<link rel="stylesheet" type="text/css" href="../static/easyui/themes/default/easyui.css" th:href="@{/easyui/themes/default/easyui.css}" />
+		<link rel="stylesheet" type="text/css" href="../static/easyui/themes/icon.css" th:href="@{/easyui/themes/icon.css}" />
+		<link rel="stylesheet" type="text/css" href="../static/easyui/demo/demo.css" th:href="@{/easyui/demo/demo.css}" />
+		<script type="text/javascript" src="../static/easyui/jquery.min.js" th:src="@{/easyui/jquery.min.js}"></script>
+		<script type="text/javascript" src="../static/easyui/jquery.easyui.min.js" th:src="@{/easyui/jquery.easyui.min.js}"></script>
+	</head>
+
+	<body>
+		<table id="dg1" title="DataGrid">
+
+		</table>
+
+		<table id="dg2" title="DG2">
+
+		</table>
+		
+		<table id="dg3" title="DG3">
+
+		</table>
+
+	</body>
+
+	<script language="JavaScript">
+		var editIndex = undefined
+		$(function() {
+
+			$('#dg1').datagrid({
+				columns: [
+					[{
+							field: 'code',
+							title: 'Code',
+							width: 100,
+							sortable: true,
+							editor: 'numberbox'
+						},
+						{
+							field: 'name',
+							title: 'Name',
+							width: 100
+						},
+						{
+							field: 'price',
+							title: 'Price',
+							width: 100,
+							align: 'right'
+						}
+					]
+				],
+				toolbar: [{
+					iconCls: 'icon-add',
+					handler: function() {
+						alert('add')
+					}
+				}, {
+					iconCls: 'icon-edit',
+					handler: function() {
+						var r = $("#dg1").datagrid('getSelected')
+						editIndex = $('#dg1').datagrid('getRowIndex', r)
+						$('#dg1').datagrid('beginEdit', editIndex)
+						var t1 = $(this)
+						var pp = t1.parents('.datagrid-wrap').find('.datagrid-f').first()
+						//console.info(pp.attr('tagName') + " "+pp.attr('class'))
+					}
+				}, {
+					iconCls: 'icon-remove',
+					handler: function() {
+						alert('help')
+					}
+				}, '-', {
+					iconCls: 'icon-save',
+					handler: function() {
+						if(editIndex == undefined)
+							return
+
+						if($('#dg1').datagrid('validateRow', editIndex)) {
+							$('#dg1').datagrid('endEdit', editIndex)
+						} else {
+
+						}
+						var rowsss = $('#dg1').datagrid('getChanges', 'updated')
+						alert(JSON.stringify(rowsss))
+
+					}
+				}, {
+					iconCls: 'icon-undo',
+					handler: function() {
+						alert('help')
+					}
+				}],
+				singleSelect: true,
+				rownumbers: true,
+				data: [{
+						code: 1000,
+						name: 'Jone',
+						price: 17.89
+					},
+					{
+						code: 1002,
+						name: 'zhou',
+						price: 90.7
+					},
+					{
+						code: 1003,
+						name: 'Shuang',
+						price: 190.7
+					}
+				],
+				onClickRow: function(index, row) {
+
+					//	$(this).datagrid('beginEdit', index)					
+				}
+			})
+		})
+	</script>
+
+	<script language="JavaScript">
+		/**
+		 * param 将要转为URL参数字符串的对象
+		 * key URL参数字符串的前缀
+		 * encode true/false 是否进行URL编码,默认为true
+		 * 
+		 * return URL参数字符串
+		 */
+		var urlEncode = function(param, key, encode) {
+			if(param == null) return '';
+			var paramStr = '';
+			var t = typeof(param);
+			if(t == 'string' || t == 'number' || t == 'boolean') {
+				paramStr += '&' + key + '=' + ((encode == null || encode) ? encodeURIComponent(param) : param);
+			} else {
+				for(var i in param) {
+					var k = key == null ? i : key + (param instanceof Array ? '[' + i + ']' : '.' + i);
+					paramStr += urlEncode(param[i], k, encode);
+				}
+			}
+			return paramStr;
+		};
+
+		var obj = {
+			name: 'tom',
+			'class': {
+				className: 'class1'
+			},
+			classMates: [{
+				name: 'lily'
+			}]
+		};
+		console.log(urlEncode(obj));
+		//output: &name=tom&class.className=class1&classMates[0].name=lily
+		console.log(urlEncode(obj, 'stu'));
+		//output: &stu.name=tom&stu.class.className=class1&stu.classMates[0].name=lily
+
+		var dgextMap = {}
+		$(function() {
+			$.fn.dgext = function(param) {
+				var tableid = $(this).attr('id')
+				console.info("trans table [" + tableid + "] to datagrid")
+				var tbinfo = {}
+				tbinfo.id = tableid
+				tbinfo.defValue = param.defValue
+				tbinfo.insertUrl = param.insertUrl
+				tbinfo.deleteUrl = param.deleteUrl
+				tbinfo.updateUrl = param.updateUrl
+				
+				tbinfo.childDataGrids = param.childDataGrids
+				
+				dgextMap[tableid] = tbinfo
+				$(this).datagrid({
+					columns: param.columns,
+					rownumbers: true,
+					singleSelect: true,
+					data: param.data,
+					url: param.url,
+					method: param.method,
+
+					toolbar: [{
+						iconCls: 'icon-add',
+						text: 'New',
+						handler: function() {
+							var easydg = $(this).parents('.datagrid-wrap').find('.datagrid-f').first()
+							var tbid = easydg.attr('id')
+							var editIndex = dgextMap[tbid].editIndex
+							if(editIndex != undefined) {
+								easydg.datagrid('selectRow', editIndex)
+								console.info("Row Index [" + editIndex + "] is edit now, can't add new record")
+								return
+							} else if(editIndex == undefined) {
+								if(dgextMap[tbid].defValue != undefined) {
+									easydg.datagrid('appendRow', dgextMap[tbid].defValue)
+								} else {
+									easydg.datagrid('appendRow', {})
+								}
+								editIndex = easydg.datagrid('getRows').length - 1
+								easydg.datagrid('selectRow', editIndex).datagrid('beginEdit', editIndex)
+								dgextMap[tbid].editIndex = editIndex
+								dgextMap[tbid].action = 'inserted'
+							}
+						}
+					}, {
+						iconCls: 'icon-edit',
+						text: 'Edit',
+						handler: function() {
+							var easydg = $(this).parents('.datagrid-wrap').find('.datagrid-f').first()
+							var tbid = easydg.attr('id')
+							var editIndex = dgextMap[tbid].editIndex
+							if(editIndex != undefined) {
+								easydg.datagrid('selectRow', editIndex)
+								console.info("Row Index [" + editIndex + "] is edit now, can't edit other row")
+								return
+							}
+							var row = easydg.datagrid('getSelected')
+							editIndex = easydg.datagrid('getRowIndex', row)
+							easydg.datagrid('selectRow', editIndex).datagrid('beginEdit', editIndex)
+							dgextMap[tbid].editIndex = editIndex
+							dgextMap[tbid].action = 'updated'
+						}
+					}, {
+						iconCls: 'icon-remove',
+						text: 'Remove',
+						handler: function() {
+							var easydg = $(this).parents('.datagrid-wrap').find('.datagrid-f').first()
+							var tbid = easydg.attr('id')
+							var editIndex = dgextMap[tbid].editIndex
+							if(editIndex != undefined) {
+								easydg.datagrid('selectRow', editIndex)
+								console.info("Row Index [" + editIndex + "] is edit now, can't remove other row")
+								return
+							}
+							var row = easydg.datagrid('getSelected')
+							editIndex = easydg.datagrid('getRowIndex', row)
+							easydg.datagrid('deleteRow', editIndex)
+							dgextMap[tbid].editIndex = editIndex
+							dgextMap[tbid].action = 'deleted'
+						}
+					}, '-', {
+						iconCls: 'icon-save',
+						text: 'Accept',
+						handler: function() {
+							var easydg = $(this).parents('.datagrid-wrap').find('.datagrid-f').first()
+							var tbid = easydg.attr('id')
+							var editIndex = dgextMap[tbid].editIndex
+							if(editIndex != undefined) {
+								easydg.datagrid('endEdit', editIndex)
+								var rowchanges = easydg.datagrid('getChanges')
+								if(rowchanges.length > 0) {
+									var act = dgextMap[tbid].action
+									var url = null
+									if(act == 'inserted') {
+										url = dgextMap[tbid].insertUrl
+									} else if(act == 'updated') {
+										url = dgextMap[tbid].updateUrl
+									} else if(act == 'deleted') {
+										url = dgextMap[tbid].deleteUrl
+									}
+									if(url != null && url != undefined) {
+										var row = rowchanges[0]
+										console.info('try [' + act + '] :' + JSON.stringify(row) + ' @@url:' + url)
+										$.get(url, row, function(data, status) {
+											if(status == 'success') {
+												dgextMap[tbid].editIndex = undefined
+												if(act == 'inserted' || act == 'updated') {
+													easydg.datagrid('updateRow', {
+														index: editIndex,
+														row: data
+													})
+												}
+												easydg.datagrid('acceptChanges')
+												return
+											} else {
+												$.messager.alert('ERROR', act + ' to server failed, server has exception. all changes rollback', 'error')
+												easydg.datagrid('rejectChanges')
+												dgextMap[tbid].editIndex = undefined
+												dgextMap[tbid].action = undefined
+											}
+										})
+									} else {
+										$.messager.alert('ERROR', act + ' to server failed, url is wrong. all changes rollback', 'error')
+										easydg.datagrid('rejectChanges')
+										dgextMap[tbid].editIndex = undefined
+										dgextMap[tbid].action = undefined
+									}
+								}
+							}
+						}
+					}, {
+						iconCls: 'icon-undo',
+						text: 'Reject',
+						handler: function() {
+							var easydg = $(this).parents('.datagrid-wrap').find('.datagrid-f').first()
+							var tbid = easydg.attr('id')
+							var editIndex = dgextMap[tbid].editIndex
+							if(editIndex != undefined) {
+								if(dgextMap[tbid].action == 'inserted' || dgextMap[tbid].action == 'updated') {
+									easydg.datagrid('cancelEdit', editIndex)
+								}
+								easydg.datagrid('rejectChanges')
+								dgextMap[tbid].editIndex = undefined
+								dgextMap[tbid].action = undefined
+							}
+						}
+					}, {
+						iconCls: 'icon-search',
+						text: 'GetChanges',
+						handler: function() {
+							var easydg = $(this).parents('.datagrid-wrap').find('.datagrid-f').first()
+							var tbid = easydg.attr('id')
+							var editIndex = dgextMap[tbid].editIndex
+							if(editIndex != undefined) {
+								easydg.datagrid('endEdit', editIndex)
+								easydg.datagrid('beginEdit', editIndex)
+							}
+							var rowchanges = easydg.datagrid('getChanges')
+							if(rowchanges.length > 0) {
+								var act = dgextMap[tbid].action
+								alert(act + " " + JSON.stringify(rowchanges))
+							}
+						}
+					}],
+					onClickRow: function(index, row) {
+						var tbid = $(this).attr('id')
+						var editIndex = dgextMap[tbid].editIndex
+						if(editIndex != undefined) {
+							$(this).datagrid('selectRow', editIndex)
+							return;
+						}
+						// 级联操作
+						var childs=dgextMap[tbid].childDataGrids
+						if(childs !=null && childs !=undefined){
+							for (var t in childs){
+								$('#'+childs[t]).datagrid('load', row)
+							}
+						}
+					}
+				})
+			}
+
+			$('#dg2').dgext({
+				columns: [
+					[{
+							field: 'id',
+							title: 'identity',
+							width: 100,
+							editor: 'numberbox'
+						},
+						{
+							field: 'name',
+							title: 'name',
+							width: 200,
+							editor: 'text'
+						}
+					]
+				],
+				url: '/multidemoes/daodemo/src/main/resources/templates/dat3.json',
+				method: 'get',
+				childDataGrids:['dg3'],
+				insertUrl: '/multidemoes/daodemo/src/main/resources/templates/dat1.json',
+				updateUrl: '/multidemoes/daodemo/src/main/resources/templates/dat2.json',
+				deleteUrl: '/multidemoes/daodemo/src/main/resources/templates/dat1.json'
+			})
+			
+			$('#dg3').dgext({
+				columns: [
+					[{
+							field: 'id',
+							title: 'identity',
+							width: 100,
+							editor: 'numberbox'
+						},
+						{
+							field: 'name',
+							title: 'name',
+							width: 200,
+							editor: 'text'
+						}
+					]
+				],
+				url: '/multidemoes/daodemo/src/main/resources/templates/dat4.json',
+				method: 'get'
+			})
+			
+			
+		})
+	</script>
+
+</html>
