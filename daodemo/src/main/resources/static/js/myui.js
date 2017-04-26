@@ -5,6 +5,11 @@
  * 
  */
 
+// 判断是否是数组类型
+function isArray(o) {
+	return Object.prototype.toString.call(o) === '[object Array]';
+}
+
 $(function() {
 
 	var g_dgextMap = {}
@@ -186,7 +191,8 @@ $(function() {
 		singleSelect: true,
 		toolbar: defToolbar,
 		onClickRow: onclickrow,
-		defRowValue: {}
+		defRowValue: {},
+		fitColumns: true
 	}
 
 	$.fn.mydg = function(param) {
@@ -381,10 +387,9 @@ $(function() {
 		})
 	}
 
-
 	// 对easyui form 进行扩展
 	g_myformMap = {}
-	
+
 	// form 中的submit按钮
 	var defFormSubtn = {
 		text: 'Submit',
@@ -395,7 +400,7 @@ $(function() {
 			$("#" + formid).submit()
 		}
 	}
-	
+
 	var defForm = {
 		orientate: 'vertical',
 		onSubmit: function(param) {
@@ -406,17 +411,18 @@ $(function() {
 			var id = $(this).attr("id")
 			console.info("success submit form [" + id + " ]")
 			var updateTable = g_myformMap[id].updateTable
-			data =JSON.parse(data)
-			if(updateTable !=null && updateTable !=undefined){
-				console.info("update table ["+updateTable+"]")
-				$("#"+updateTable).datagrid('loadData',data)
+			data = JSON.parse(data)
+			if(updateTable != null && updateTable != undefined) {
+				console.info("update table [" + updateTable + "]")
+				$("#" + updateTable).datagrid('loadData', data)
 			}
 		}
 	}
+	
 	// 处理不同的 input类型
 	function handleInputUI(f, sid) {
-		var ui= f.ui
-		switch(ui){
+		var ui = f.ui
+		switch(ui) {
 			case 'textbox':
 				$(sid).textbox(f)
 				break;;
@@ -440,13 +446,14 @@ $(function() {
 				break;;
 			default:
 				$(sid).textbox(f)
-			}
+		}
 	}
-	
+
 	/**
 	 * $('#form-id').myform({..}) 
 	 * @param {Object} param
 	 */
+	
 	$.fn.myform = function(param) {
 		var formid = $(this).attr('id')
 		console.info("trans form [" + formid + "] to myform ......")
@@ -502,4 +509,68 @@ $(function() {
 		$(this).form(info)
 	}
 	
+	//	var g_myAccordingMap={}
+	//	$.fn.myAccording=function(param){
+	//		var id=$(this).attr('id');
+	//		var info=$.extend(true, g_myAccordingMap[id], param);
+	//		g_myAccordingMap[id] = info
+	//		
+	//		var panels=info.panels;
+	//		for(i in panels)
+	//		{
+	//			var p = panels[i]
+	//			var div= $("<div title='"+p.title+"' style='padding:10px;'></div>")
+	//			var tabbtns=p.tabbtns
+	//			if(tabbtns !=null && tabbtns !=undefined && isArray(tabbtns) && tabbtns.length>0)
+	//			{
+	//				
+	//			}
+	//		}
+	//	}
+	
+	
+	/**
+	 *  use easy ui to navigate 
+	 */
+	var g_myNavigateTabsId = null
+
+	var defNaviParam = {
+		onClick: function(node) {
+			console.info('navigate tree [' + node.text + '] is clicked')
+			if(node.url != undefined && node.url.trim().length > 0) {
+				console.info('try to open url [' + node.url + ']')
+				var cont = '<iframe scrolling="auto" frameborder="0" style="width:100%;height: 90%;" src="' + node.url + '" > </iframe>'
+				$("#"+g_myNavigateTabsId).tabs('add', {
+					title: node.text,
+					closable: true,
+					content: cont
+				})
+			}
+
+		}
+	}
+
+	function navigeteNode(nodes, level) {
+		for(x in nodes) {
+			var node = nodes[x]
+			if(node.iconCls == undefined) {
+				if(level == 1) {
+					node.iconCls = 'icon-basic'
+				} else {
+					node.iconCls = 'icon-gears'
+				}
+			}
+			var child = node.children
+			if(child != undefined && child != null && isArray(child)) {
+				navigeteNode(child, level + 1)
+			}
+		}
+	}
+
+	$.fn.mynavigate=function(param) {
+		g_myNavigateTabsId = param.tabsid
+		navigeteNode(param.data, 1)
+		var pa=$.extend(true, defNaviParam, param);
+		$(this).tree(pa)
+	}
 })

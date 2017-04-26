@@ -11,7 +11,7 @@
     <script type="text/javascript" src="../static/easyui/jquery.easyui.min.js" th:src="@{/easyui/jquery.easyui.min.js}"></script>
 </head>
 <body>
-<div class="easyui-layout" style="width:auto;height:700px;">
+<div class="easyui-layout" style="width:auto;height:auto;"  data-options="fit:true">
     <div data-options="region:'north'" style="height:100px">
         <h2>DEMON MAIN PAGE</h2>
         <p>Name:<span th:text="${session.s_user.name}">user.name</span> Email:<span

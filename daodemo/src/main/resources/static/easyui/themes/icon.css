@@ -94,3 +94,25 @@
 .icon-large-chart{
 	background:url('icons/large_chart.png') no-repeat center center;
 }
+
+
+/*
+ *  add some pngs 
+ *  by  zhoushuang
+ */
+
+.icon-basic{
+	background: url('icons/basic.png') no-repeat center center; 
+}
+
+.icon-gears{
+	background: url('icons/gears.png') no-repeat center center; 
+}
+
+.icon-grid{
+	background: url('icons/grid.png') no-repeat center center; 
+}
+
+.icon-form{
+	background: url('icons/form.png') no-repeat center center; 
+}
